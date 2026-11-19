@@ -97,7 +97,8 @@ describe('deadlines and nudges', () => {
     expect(kinds).toContain('B:didfund');
     expect(kinds).toContain('F:pmlock');
     expect(kinds).toContain('PM:survey');
-    expect(kinds).toContain('PM:owed');
+    expect(kinds).not.toContain('PM:owed');
+    expect(kinds.filter((k) => k.startsWith('PM:'))).toHaveLength(1);
   });
 
   it('formats countdowns', () => {

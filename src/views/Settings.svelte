@@ -211,7 +211,9 @@
     <button class="btn danger" onclick={eraseAll}>Erase everything on this device</button>
   </section>
 
-  <p class="muted small center">Milk's Backer Tracker v{__APP_VERSION__} · made with 🚀 · nothing leaves this device</p>
+  <p class="muted small center">
+    Milk's Backer Tracker v{__APP_VERSION__} · made with 🚀 · <a href="https://milkneggs.github.io/pitch/milksbackertracker.html" target="_blank" rel="noopener">See what it does</a>
+  </p>
 </main>
 
 {#if pasting}<PasteSheet onclose={() => (pasting = false)} />{/if}

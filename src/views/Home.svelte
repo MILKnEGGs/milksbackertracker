@@ -136,6 +136,9 @@
                 {:else if n.kind === 'owed'}
                   <span class="small">Still owe <strong>{money(totals(p).owed, p.currency)}</strong></span>
                 {/if}
+                {#if (n.kind === 'pmlock' || n.kind === 'survey') && totals(p).owed > 0}
+                  <span class="tag warn">Owe {money(totals(p).owed, p.currency)}</span>
+                {/if}
               {/snippet}
               {#snippet right()}
                 {#if n.kind === 'pmlock'}<Countdown at={when(p.pm.locksAt) ?? 0} big />{/if}

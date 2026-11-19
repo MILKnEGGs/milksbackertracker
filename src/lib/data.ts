@@ -390,9 +390,10 @@ export function nudges(d: Data, now = Date.now()): Nudge[] {
     }
     const i = stageIndex(p.status);
     const lock = when(p.pm.locksAt);
+    // One row per project: a pledge manager row also mentions money owed.
     if (i >= 1 && i <= 3 && lock != null && lock > now) out.push({ project: p, kind: 'pmlock', at: lock });
     else if (p.status === 'pm' && (!p.pm.surveyDone || !p.pm.addressDone)) out.push({ project: p, kind: 'survey', at: p.updatedAt });
-    if (i >= 3 && i <= 6 && totals(p).owed > 0) out.push({ project: p, kind: 'owed', at: p.updatedAt });
+    else if (i >= 3 && i <= 6 && totals(p).owed > 0) out.push({ project: p, kind: 'owed', at: p.updatedAt });
   }
   return out.sort((a, b) => a.at - b.at);
 }
