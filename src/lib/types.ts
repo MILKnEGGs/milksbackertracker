@@ -1,7 +1,7 @@
 // Saved data. Everything lives in one IndexedDB record on this device (see db.ts).
 
 /** The journey, in order. A project sits at one stage; reaching a stage stamps the date in `history`. */
-export type Stage = 'watching' | 'backed' | 'funded' | 'pm' | 'production' | 'boat' | 'shipping' | 'delivered';
+export type Stage = 'watching' | 'backed' | 'funded' | 'production' | 'boat' | 'shipping' | 'delivered';
 
 /** Ways a project leaves the journey early. */
 export type Outcome = 'passed' | 'failed' | 'cancelled' | 'refunded';

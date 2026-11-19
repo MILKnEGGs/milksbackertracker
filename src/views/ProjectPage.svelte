@@ -62,7 +62,7 @@
   {@const t = totals(p)}
   {@const late = monthsLate(p, clock.now)}
   {@const dls = deadlinesOf(p)}
-  {@const pmOpen = showPm || !!(p.pm.service || p.pm.url || p.pm.locksAt || p.pm.opensAt) || (i >= 2 && i <= 3)}
+  {@const pmOpen = showPm || !!(p.pm.service || p.pm.url || p.pm.locksAt || p.pm.opensAt) || i === 2}
   {@const timeline = [
     ...p.history.map((h) => ({ at: h.at, text: `${statusInfo(h.status).emoji} ${statusInfo(h.status).label}` })),
     ...p.delays.map((dl) => ({ at: dl.at, text: `🐢 Delivery moved ${monthLabel(dl.from)} → ${monthLabel(dl.to)}${dl.note ? `: ${dl.note}` : ''}` })),
@@ -282,7 +282,7 @@
     {/if}
 
     <!-- Pledge manager -->
-    {#if i >= 1 && i <= 7}
+    {#if i >= 1}
       {#if pmOpen}
         <section class="card stack">
           <h3>📋 Pledge manager</h3>
@@ -349,7 +349,7 @@
             {/each}
           </div>
         {/if}
-        {#if i >= 4}
+        {#if i >= 3}
           <div class="grid2">
             <label class="field">
               <span>Carrier</span>

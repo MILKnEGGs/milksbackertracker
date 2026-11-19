@@ -6,7 +6,7 @@ Everything you back on Kickstarter, Gamefound, BackerKit, Indiegogo and friends,
   **Needs you** asks about campaigns that ended ("Did you back it?", "Did it fund?"), counts down pledge manager lock dates and
   flags an unfinished survey or address and money still owed. Also **Coming up** (launches, pledge managers opening),
   **On its way** (with tracking) and **Running late**.
-- **The journey**: Watching → Backed → Funded → Pledge manager → In production → On the boat → Shipping to me → Delivered,
+- **The journey**: Watching → Backed → Funded → In production → On the boat → Shipping to me → Delivered,
   plus Passed / Not funded / Cancelled / Refunded. Each step is dated (editable, so old backings can be entered properly),
   with undo. There's a late-pledge flag.
 - **Money**: the pledge, add-ons, shipping, tax/VAT and other lines, each paid or not, in the project's own currency. Funding marks the

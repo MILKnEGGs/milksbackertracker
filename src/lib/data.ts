@@ -103,7 +103,6 @@ export const STAGES: StageInfo[] = [
   { id: 'watching', label: 'Watching', short: 'Watching', emoji: '👀', hint: 'Following it; not backed yet' },
   { id: 'backed', label: 'Backed', short: 'Backed', emoji: '🙌', hint: 'Pledged while the campaign is live' },
   { id: 'funded', label: 'Funded', short: 'Funded', emoji: '🎉', hint: 'Campaign ended and hit its goal' },
-  { id: 'pm', label: 'Pledge manager', short: 'Pledge mgr', emoji: '📋', hint: 'Survey, add-ons, address, shipping' },
   { id: 'production', label: 'In production', short: 'Production', emoji: '🏭', hint: 'Being made' },
   { id: 'boat', label: 'On the boat', short: 'On the boat', emoji: '🚢', hint: 'Freight to the regional warehouse' },
   { id: 'shipping', label: 'Shipping to me', short: 'Shipping', emoji: '📦', hint: 'In the mail, maybe with tracking' },
@@ -128,7 +127,7 @@ export const isBacking = (s: Status): boolean => stageIndex(s) >= 1;
 /** Backed but not here yet. */
 export const isActive = (s: Status): boolean => {
   const i = stageIndex(s);
-  return i >= 1 && i <= 6;
+  return i >= 1 && i <= 5;
 };
 
 /** The day a status was reached, if it was. */
@@ -392,8 +391,8 @@ export function nudges(d: Data, now = Date.now()): Nudge[] {
     const lock = when(p.pm.locksAt);
     // One row per project: a pledge manager row also mentions money owed.
     if (i >= 1 && i <= 3 && lock != null && lock > now) out.push({ project: p, kind: 'pmlock', at: lock });
-    else if (p.status === 'pm' && (!p.pm.surveyDone || !p.pm.addressDone)) out.push({ project: p, kind: 'survey', at: p.updatedAt });
-    else if (i >= 3 && i <= 6 && totals(p).owed > 0) out.push({ project: p, kind: 'owed', at: p.updatedAt });
+    else if (i >= 2 && i <= 3 && (p.pm.service || p.pm.url) && (!p.pm.surveyDone || !p.pm.addressDone)) out.push({ project: p, kind: 'survey', at: p.updatedAt });
+    else if (i >= 2 && i <= 5 && totals(p).owed > 0) out.push({ project: p, kind: 'owed', at: p.updatedAt });
   }
   return out.sort((a, b) => a.at - b.at);
 }
@@ -427,11 +426,11 @@ export function inGroup(p: Project, g: Group): boolean {
     case 'following':
       return i === 0;
     case 'active':
-      return i >= 1 && i <= 4;
+      return i >= 1 && i <= 3;
     case 'coming':
-      return i === 5 || i === 6;
+      return i === 4 || i === 5;
     case 'delivered':
-      return i === 7;
+      return i === 6;
     case 'closed':
       return i < 0;
     default:
@@ -583,7 +582,9 @@ const num = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v)
 
 export function normalizeProject(raw: Partial<Project>, d?: Data): Project {
   const now = Date.now();
-  const status = ALL.some((s) => s.id === raw.status) ? (raw.status as Status) : 'watching';
+  // "Pledge manager" used to be a stage; those projects are Funded now (the pledge manager card stays).
+  const rawStatus = (raw.status as string) === 'pm' ? 'funded' : raw.status;
+  const status = ALL.some((s) => s.id === rawStatus) ? (rawStatus as Status) : 'watching';
   const pm = { ...emptyPm(), ...(raw.pm ?? {}) };
   return {
     id: str(raw.id) || uid(),

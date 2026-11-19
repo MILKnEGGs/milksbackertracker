@@ -62,8 +62,8 @@ describe('stages', () => {
     expect(setStatus(p, 'funded', '2026-02-01')).toBe(true);
     expect(totals(p)).toEqual({ total: 120, paid: 100, owed: 20 });
     setStatus(p, 'boat', '2026-06-01');
-    setStatus(p, 'pm', '2026-07-01');
-    expect(p.history.map((h) => h.status)).toEqual(['watching', 'backed', 'funded', 'pm']);
+    setStatus(p, 'production', '2026-07-01');
+    expect(p.history.map((h) => h.status)).toEqual(['watching', 'backed', 'funded', 'production']);
     setStatus(p, 'refunded', '2026-08-01');
     expect(p.history.at(-1)).toEqual({ status: 'refunded', at: '2026-08-01' });
     setStatus(p, 'delivered', '2026-09-01');
@@ -71,11 +71,24 @@ describe('stages', () => {
   });
 });
 
+describe('migrating old data', () => {
+  it('turns the old Pledge manager stage into Funded and keeps the pledge manager details', () => {
+    const n = normalize({
+      projects: [
+        { name: 'Old', status: 'pm', history: [{ status: 'backed', at: '2026-01-01' }, { status: 'pm', at: '2026-03-01' }], pm: { service: 'BackerKit', locksAt: '2026-12-01T10:00' } },
+      ],
+    });
+    expect(n.projects[0].status).toBe('funded');
+    expect(n.projects[0].history.map((h) => h.status)).toEqual(['backed']);
+    expect(n.projects[0].pm).toMatchObject({ service: 'BackerKit', locksAt: '2026-12-01T10:00' });
+  });
+});
+
 describe('deadlines and nudges', () => {
   it('shows launch/end only while they matter, soonest first', () => {
     const d = newData();
     const a = newProject(d, { name: 'A', status: 'watching', launchAt: '2026-12-01T10:00', endAt: '2026-12-30T10:00' });
-    const b = newProject(d, { name: 'B', status: 'production', endAt: '2026-12-02T10:00' });
+    const b = newProject(d, { name: 'B', status: 'boat', endAt: '2026-12-02T10:00' });
     b.pm.locksAt = '2026-11-25T12:00';
     d.projects.push(a, b);
     expect(deadlinesOf(b)).toEqual([]);
@@ -89,7 +102,8 @@ describe('deadlines and nudges', () => {
     const b = newProject(d, { name: 'B', status: 'backed', endAt: '2026-11-11T10:00' });
     const f = newProject(d, { name: 'F', status: 'funded' });
     f.pm.locksAt = '2026-11-30T10:00';
-    const pm = newProject(d, { name: 'PM', status: 'pm' });
+    const pm = newProject(d, { name: 'PM', status: 'production' });
+    pm.pm.service = 'BackerKit';
     pm.lines.push(newLine('shipping', 'Ship', 30));
     d.projects.push(w, b, f, pm);
     const kinds = nudges(d, at('2026-11-19T00:00')).map((n) => `${n.project.name}:${n.kind}`);
